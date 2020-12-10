@@ -18,7 +18,7 @@ export class BaseRoutedController {
 
   getRouteMaps(): RouteMap {
     return {
-      ...((<any>this).deocratedRouteMap || {}), /* will be injected from decorators package */
+      ...((<any>this).__drm || {}), /* will be injected from decorators package */
     }
   }
 

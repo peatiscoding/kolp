@@ -6,8 +6,7 @@
   "module": "lib/esm/index.js",
   "scripts": {
     "build": "tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json",
-    "test": "jest --config=jestconfig.json --passWithNoTests",
-    "clean": "rm -rf node_modules/"
+    "clean": "rm -rf node_modules/ && rm -rf libs/"
   },
   "repository": {
     "type": "git",
@@ -28,9 +27,11 @@
   "homepage": "https://github.com/peatiscoding/lemon#readme",
   "dependencies": {
     "@koa/router": "^8.0.8",
-    "koa": "^2.9.0",
     "koa-bodyparser": "^4.3.0",
     "serverless-http": "^2.6.0"
+  },
+  "peerDependencies": {
+    "koa": "^2.9.0"
   },
   "devDependencies": {
     "@serverless/typescript": "^2.12.0",
