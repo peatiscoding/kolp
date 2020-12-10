@@ -1,16 +1,17 @@
 {
-  "name": "lynn",
+  "name": "lemon",
   "version": "1.0.0",
-  "description": "Lambda toolbox for tiny-services",
-  "main": "lib/index.js",
+  "description": "Lambda enabled microservice on node",
+  "main": "lib/cjs/index.js",
+  "module": "lib/esm/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json",
     "test": "jest --config=jestconfig.json --passWithNoTests",
     "clean": "rm -rf node_modules/"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/peatiscoding/lynn.git"
+    "url": "git+https://github.com/peatiscoding/lemon.git"
   },
   "keywords": [
     "lambda",
@@ -22,9 +23,9 @@
   "author": "Kittiphat S.",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/peatiscoding/lynn/issues"
+    "url": "https://github.com/peatiscoding/lemon/issues"
   },
-  "homepage": "https://github.com/peatiscoding/lynn#readme",
+  "homepage": "https://github.com/peatiscoding/lemon#readme",
   "dependencies": {
     "@koa/router": "^8.0.8",
     "koa": "^2.9.0",
