@@ -1,5 +1,5 @@
-# Lemon
+# Kolp
 
-"Lambda enabled microservice on node"
+"jetpack for building microservice on Lambda"
 
-a small tiny library toolbox for Lambda (using Koa, Koa Router) then describe your endpoints with controller.
+a tiny library toolbox for Lambda (using Koa, Koa Router) then describe your endpoints with controllers.

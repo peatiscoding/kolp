@@ -1,7 +1,7 @@
 {
-  "name": "lemon",
+  "name": "kolp",
   "version": "1.0.0",
-  "description": "Lambda enabled microservice on node",
+  "description": "Build microservice on Lambda using Koa",
   "main": "lib/cjs/index.js",
   "module": "lib/esm/index.js",
   "scripts": {
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/peatiscoding/lemon.git"
+    "url": "git+https://github.com/peatiscoding/kolp.git"
   },
   "keywords": [
     "lambda",
@@ -22,9 +22,9 @@
   "author": "Kittiphat S.",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/peatiscoding/lemon/issues"
+    "url": "https://github.com/peatiscoding/kolp/issues"
   },
-  "homepage": "https://github.com/peatiscoding/lemon#readme",
+  "homepage": "https://github.com/peatiscoding/kolp#readme",
   "dependencies": {
     "@koa/router": "^8.0.8",
     "koa-bodyparser": "^4.3.0",
