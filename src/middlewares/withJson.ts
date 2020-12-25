@@ -9,7 +9,8 @@ export const withJson = (): Middleware => async (ctx, next) => {
     ctx.body = {
       success: false,
       code: err.code && err.code,
-      error: err.message
+      error: err.message,
+      data: err.data,
     };
   }
 }
