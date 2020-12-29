@@ -1,8 +1,15 @@
 import { Middleware } from 'koa'
 
-export const withJson = (): Middleware => async (ctx, next) => {
+interface Logger {
+  log: (...args: any[]) => void
+  error: (...args: any[]) => void
+}
+
+export const withJson = (logger: Logger | undefined): Middleware => async (ctx, next) => {
   try {
-    await next();
+    logger?.log(`[>>] ${ctx.request.url}`)
+    await next()
+    logger?.log(`[<<] ${ctx.request.url} ${ctx.res.statusCode}`)
   } catch (err) {
     // will only respond with JSON
     ctx.status = err.statusCode || err.status || 500;
@@ -12,5 +19,6 @@ export const withJson = (): Middleware => async (ctx, next) => {
       error: err.message,
       data: err.data,
     };
+    logger?.error(`[<<] ${ctx.request.url} ${ctx.res.statusCode}`)
   }
 }
