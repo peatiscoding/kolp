@@ -1,2 +1,7 @@
 import { Middleware } from 'koa';
-export declare const withJson: () => Middleware;
+interface Logger {
+    log: (...args: any[]) => void;
+    error: (...args: any[]) => void;
+}
+export declare const withJson: (logger: Logger | undefined) => Middleware;
+export {};
