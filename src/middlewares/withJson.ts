@@ -5,7 +5,7 @@ interface Logger {
   error: (...args: any[]) => void
 }
 
-export const withJson = (logger: Logger | undefined): Middleware => async (ctx, next) => {
+export const withJson = (logger?: Logger): Middleware => async (ctx, next) => {
   try {
     logger?.log(`[>>] ${ctx.request.url}`)
     await next()
