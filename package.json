@@ -1,6 +1,6 @@
 {
   "name": "kolp",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Build microservice on Lambda using Koa",
   "main": "lib/cjs/index.js",
   "module": "lib/esm/index.js",
