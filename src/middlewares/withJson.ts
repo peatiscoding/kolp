@@ -1,9 +1,5 @@
 import { Middleware } from 'koa'
-
-interface Logger {
-  log: (...args: any[]) => void
-  error: (...args: any[]) => void
-}
+import { Logger } from '../utils/logger'
 
 export const withJson = (logger?: Logger): Middleware => async (ctx, next) => {
   try {

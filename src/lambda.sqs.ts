@@ -1,5 +1,6 @@
 import type { SQSHandler, SQSRecord } from 'aws-lambda'
 import SQS from 'aws-sdk/clients/sqs'
+import { Logger } from './utils/logger'
 
 interface MessageHandlerObject<M> {
   parseMessage?(body: any, sqsRecord: SQSRecord): M
@@ -18,8 +19,17 @@ export type MessageHook = (o: SQSRecord) => void | Promise<void>
 export interface MessageHandlerOption {
   bodyType: 'json' | 'string'
   parallelism: 'no' | 'full' | 'useMessageGroupId'
+  /**
+   * Delete Message Policy - how should lambda handle each SQSRecord?
+   * 
+   * - 'always-delete-on-success' - always explicitly delete success message.
+   * - 'auto' - delete only success message when there is an error.
+   * - 'never' - always let lambda delete all the message on its own.
+   */
+  deleteMessagePolicy: 'always-delete-on-success' | 'auto' | 'never',
   beforeEachMessage: MessageHook[]
   sqsConfig?: SQS.Types.ClientConfiguration
+  logger?: Logger
 }
 
 interface SQSHandleResult {
@@ -38,6 +48,7 @@ export const makeSQSHandler = <M>(messageHandler: MessageHandler<M>, opts: Parti
     bodyType: 'json',
     parallelism: 'full',
     beforeEachMessage: [],
+    deleteMessagePolicy: 'never',
     ...opts,
   }
 
@@ -67,7 +78,7 @@ export const makeSQSHandler = <M>(messageHandler: MessageHandler<M>, opts: Parti
       // Successfully processed the message.
       return { record: rec }
     } catch (error) {
-      console.error(`Handle message messageId: "${rec.messageId}". Failed`, error)
+      opts.logger?.error(`Handle message messageId: "${rec.messageId}". Failed`, error)
       return { record: rec, error }
     }
   }
@@ -95,10 +106,13 @@ export const makeSQSHandler = <M>(messageHandler: MessageHandler<M>, opts: Parti
   }
 
   // Post processing
+  if (opts.deleteMessagePolicy === 'never') {
+    return null
+  }
   const successResults: SQSHandleResult[] = result.filter((o) => !o.error)
   const errorRecords: SQSRecord[] = result.filter((o) => o.error).map((o) => o.record)
 
-  if (errorRecords.length > 0) {
+  if (opts.deleteMessagePolicy === 'always-delete-on-success' || (opts.deleteMessagePolicy === 'auto' && errorRecords.length > 0)) {
     const sqs = new SQS(option.sqsConfig)
     // Eventually we will delete all the success message and throw error if ncessary.
     for (const res of successResults) {
@@ -109,11 +123,11 @@ export const makeSQSHandler = <M>(messageHandler: MessageHandler<M>, opts: Parti
           ReceiptHandle: rec.receiptHandle
         }).promise()
       } catch (error) {
-        console.error('Failed to delete processed messages.')
+        opts.logger?.error('Failed to delete processed messages.')
       }
     }
     // Throw error to release error records back to queue population.
-    const recordIdentities = errorRecords.map((o) => ({ messageId: o.messageId, messageGroupId: o.attributes.MessageGroupId }))
+    const recordIdentities = errorRecords.map((o) => ({ messageId: o.messageId, messageGroupId: o.attributes.MessageGroupId, body: o.body }))
     throw new Error(`Failed to completely process all SQS events. These ${recordIdentities.length} Error records are: ${JSON.stringify(recordIdentities)}`)
   }
 
