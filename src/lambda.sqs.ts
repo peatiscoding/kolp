@@ -62,6 +62,11 @@ export const makeSQSHandler = <M>(messageHandler: MessageHandler<M>, opts: Parti
   const bodyParser: (o: any) => any = option.bodyType === 'json' ? JSON.parse : (o) => `${o}`
   const handleOneMessage = async (rec: SQSRecord): Promise<SQSHandleResult> => {
     try {
+      if (opts.logger) {
+        opts.logger.log('Received message body=', JSON.stringify(rec.body))
+        opts.logger.log('Received message attributes=', JSON.stringify(rec.attributes))
+        opts.logger.log('Received message messageAttributes=', JSON.stringify(rec.messageAttributes))
+      }
       // Lifecycle hooks
       if (option.beforeEachMessage && option.beforeEachMessage.length > 0) {
         for(const hook of option.beforeEachMessage) {
