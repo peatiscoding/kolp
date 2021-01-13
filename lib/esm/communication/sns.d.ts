@@ -10,12 +10,12 @@ export declare class SNSMessage<E> {
     serialized(): SNS.Types.PublishInput;
 }
 export interface SNSClientOption {
-    logger: Logger;
+    logger?: Logger;
 }
 export declare class SNSClient {
-    private readonly options;
+    private readonly options?;
     private client;
-    constructor(configOrSNS: SNS | SNS.Types.ClientConfiguration, options: SNSClientOption);
+    constructor(configOrSNS: SNS | SNS.Types.ClientConfiguration, options?: Partial<SNSClientOption>);
     /**
      * publish a message to specific queue
      *
