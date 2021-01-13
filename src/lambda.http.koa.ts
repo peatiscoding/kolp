@@ -26,5 +26,11 @@ export const makeServerWithRouter = (creator: (a: Router) => void, options?: any
     creator(router)
     koa.use(router.routes())
       .use(router.allowedMethods())
-  }, options)
+  }, {
+    // Expose underlying event into original node req by default.
+    request: (req, event, context) => {
+      req.event = event
+    },
+    ...options
+  })
 }
