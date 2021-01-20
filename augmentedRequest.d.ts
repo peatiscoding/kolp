@@ -1,4 +1,4 @@
-import { Request } from 'koa'
+import koa from 'koa'
 declare module 'koa' {
     interface User {
       name: string
