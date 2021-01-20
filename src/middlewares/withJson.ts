@@ -1,11 +1,18 @@
 import { Middleware } from 'koa'
-import { Logger } from '../utils/logger'
+import { CLogger } from '../utils/logger'
 
-export const withJson = (logger?: Logger): Middleware => async (ctx, next) => {
+export const withJson = (project:string, isDevelopment:boolean): Middleware => async (ctx, next) => {
+  const logger = new CLogger(ctx.request, project, isDevelopment)
   try {
-    logger?.log(`[>>] ${ctx.request.url}`)
+    // logger?.log(`[>>] ${ctx.request.url}`)
     await next()
-    logger?.log(`[<<] ${ctx.request.url} ${ctx.res.statusCode}`)
+    // Response egress
+    logger.info({
+      errorMessage: '-',
+      rawMessage: JSON.stringify(ctx.response.body),
+      stackTrace: '-'
+    })
+    // logger?.log(`[<<] ${ctx.request.url} ${ctx.res.statusCode}`)
   } catch (err) {
     // will only respond with JSON
     ctx.status = err.statusCode || err.status || 500;
@@ -15,6 +22,11 @@ export const withJson = (logger?: Logger): Middleware => async (ctx, next) => {
       error: err.message,
       data: err.data,
     };
-    logger?.error(`[<<] ${ctx.request.url} ${ctx.res.statusCode}`)
+    logger.error({
+      errorMessage: err,
+      rawMessage: JSON.stringify(ctx.response.body),
+      stackTrace: err.stack
+    })
+    // logger?.error(`[<<] ${ctx.request.url} ${ctx.res.statusCode}`)
   }
 }

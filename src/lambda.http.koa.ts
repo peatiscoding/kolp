@@ -30,6 +30,11 @@ export const makeServerWithRouter = (creator: (a: Router) => void, options?: any
     // Expose underlying event into original node req by default.
     request: (req, event, context) => {
       req.event = event
+      req.stageVariables = event.stageVariables
+      req.requestId = event.requestContext.requestId
+      req.traceId = event.requestContext.traceId
+      req.ipAddress = event.requestContext.identity.sourceIp
+      req.userAgent = event.requestContext.identity.userAgent
     },
     ...options
   })
