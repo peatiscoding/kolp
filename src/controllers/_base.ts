@@ -1,4 +1,5 @@
-import { Middleware, Context } from 'koa'
+import { Middleware } from 'koa'
+import type { KolpServiceContext, KolpServiceState } from '../context'
 import Router from '@koa/router'
 import bodyParser from 'koa-bodyparser'
 
@@ -14,6 +15,8 @@ export interface RouteMap {
   [key: string]: RouteMapMeta
 }
 
+export type KolpRouter = Router<KolpServiceState, KolpServiceContext>
+
 export class BaseRoutedController {
 
   getRouteMaps(): RouteMap {
@@ -22,7 +25,7 @@ export class BaseRoutedController {
     }
   }
 
-  async handleSuccess(context: Context, data: any): Promise<void> {
+  async handleSuccess(context: KolpServiceContext, data: any): Promise<void> {
     context.response.status = 200
     context.response.body = {
       success: true,
@@ -36,13 +39,13 @@ export class BaseRoutedController {
    * @param path 
    * @param koaRouter 
    */
-  public register(path: string, koaRouter: Router) {
+  public register(path: string, koaRouter: KolpRouter) {
     const r = this.getRouter()
     koaRouter.use(path, r.routes(), r.allowedMethods())
   }
 
-  public getRouter(): Router {
-    const router = new Router()
+  public getRouter(): KolpRouter {
+    const router = new Router<KolpServiceState, KolpServiceContext>()
     router.use(bodyParser())
     const map = this.getRouteMaps()
     for(const fname in map) {

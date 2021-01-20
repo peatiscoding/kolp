@@ -1,7 +1,9 @@
-import { Middleware } from 'koa'
+import type { Middleware } from '../context'
 import { Logger } from '../utils/logger'
 
 export const withJson = (logger?: Logger): Middleware => async (ctx, next) => {
+  // Assign logger if needed.
+  ctx.logger = logger
   try {
     logger?.log(`[>>] ${ctx.request.url}`)
     await next()
