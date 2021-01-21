@@ -1,2 +1,2 @@
 export * from './withJson';
-export * from './withStageVariables';
+export * from './withEvent';

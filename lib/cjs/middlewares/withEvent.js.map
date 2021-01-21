@@ -1,0 +1,1 @@
+{"version":3,"file":"withEvent.js","sourceRoot":"","sources":["../../../src/middlewares/withEvent.ts"],"names":[],"mappings":";;;AAEA;;GAEG;AACU,QAAA,SAAS,GAAG,GAAe,EAAE,CAAC,KAAK,EAAE,GAAG,EAAE,IAAI,EAAE,EAAE;IAC7D,GAAG,CAAC,KAAK,GAAG,GAAG,CAAC,GAAG,IAAK,CAAC,GAAG,CAAC,GAAG,CAAS,CAAC,KAAK,CAAA;IAC/C,MAAM,IAAI,EAAE,CAAA;AACd,CAAC,CAAA"}
