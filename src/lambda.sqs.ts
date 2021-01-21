@@ -1,6 +1,6 @@
 import type { SQSHandler, SQSRecord } from 'aws-lambda'
 import SQS from 'aws-sdk/clients/sqs'
-import { _Logger } from './utils/logger'
+import { LoggerInterface } from './utils/logger'
 
 interface MessageHandlerObject<M> {
   parseMessage?(body: any, sqsRecord: SQSRecord): M
@@ -29,7 +29,7 @@ export interface MessageHandlerOption {
   deleteMessagePolicy: 'always-delete-on-success' | 'auto' | 'never',
   beforeEachMessage: MessageHook[]
   sqsConfig?: SQS.Types.ClientConfiguration
-  logger?: _Logger
+  logger?: LoggerInterface
 }
 
 interface SQSHandleResult {
@@ -64,8 +64,8 @@ export const makeSQSHandler = <M>(messageHandler: MessageHandler<M>, opts: Parti
     try {
       if (opts.logger) {
         opts.logger.log('Received message body=', JSON.stringify(rec.body))
-        opts.logger.debug('Received message attributes=', JSON.stringify(rec.attributes))
-        opts.logger.debug('Received message messageAttributes=', JSON.stringify(rec.messageAttributes))
+        opts.logger.log('Received message attributes=', JSON.stringify(rec.attributes))
+        opts.logger.log('Received message messageAttributes=', JSON.stringify(rec.messageAttributes))
       }
       // Lifecycle hooks
       if (option.beforeEachMessage && option.beforeEachMessage.length > 0) {
@@ -79,11 +79,15 @@ export const makeSQSHandler = <M>(messageHandler: MessageHandler<M>, opts: Parti
       const message: M = perMessageHandler.parseMessage(body, rec)
       // Handle the message
       await perMessageHandler.handleMessage(message, rec)
-
       // Successfully processed the message.
+      opts.logger?.info(rec)
       return { record: rec }
     } catch (error) {
-      opts.logger?.error(`Handle message messageId: "${rec.messageId}". Failed`, error)
+      // opts.logger?.error(`Handle message messageId: "${rec.messageId}". Failed`, error)
+      opts.logger?.error(rec, { 
+        errorMessage: `Handle message messageId: "${rec.messageId}". Failed ${error}`,
+        stackTrace: error.stackTrace
+      })
       return { record: rec, error }
     }
   }
@@ -128,7 +132,10 @@ export const makeSQSHandler = <M>(messageHandler: MessageHandler<M>, opts: Parti
           ReceiptHandle: rec.receiptHandle
         }).promise()
       } catch (error) {
-        opts.logger?.error('Failed to delete processed messages.')
+        opts.logger?.error(rec, { 
+          errorMessage: 'Failed to delete processed messages.',
+          stackTrace: error.stackTrace
+        })
       }
     }
     // Throw error to release error records back to queue population.

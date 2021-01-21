@@ -5,7 +5,7 @@ export const getClientDevice = (ctx: KolpServiceContext): string => {
     'cloudfront-is-mobile-viewer': isMobile,
     'cloudfront-is-smarttv-viewer': isSmartTV,
     'cloudfront-is-tablet-viewer': isTablet,
-  } = ctx.req.headers
+  } = ctx.event.headers
 
   if (isDesktop) {
     return 'desktop'
@@ -16,5 +16,5 @@ export const getClientDevice = (ctx: KolpServiceContext): string => {
   } else if (isTablet) {
     return 'tablet'
   }
-  return 'Please allowed header on cloudfront'
+  return 'NOT_FOUND_PLZ_ALLOW_CLOUDFRONT_HEADER'
 }

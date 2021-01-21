@@ -4,14 +4,11 @@ import { Logger } from '../utils/logger'
 export const withJson = (logger?: Logger): Middleware => async (ctx, next) => {
   // Assign logger if needed.
   ctx.logger = logger
+  // For loggingto be able to validate type
+  ctx.discriminator = 'context'
   try {
     await next() 
-    ctx.logger.info({
-      statusCode: ctx.response.status,
-      errorMessage: '-',
-      rawMessage: JSON.stringify(ctx.response.body),
-      stackTrace: '-'
-    })
+    ctx.logger.info(ctx)
     // logger?.log(`[<<] ${ctx.request.url} ${ctx.res.statusCode}`)
   } catch (err) {
     // will only respond with JSON
@@ -22,11 +19,9 @@ export const withJson = (logger?: Logger): Middleware => async (ctx, next) => {
       error: err.message,
       data: err.data,
     };
-    ctx.logger.error({
-      statusCode: ctx.response.status,
-      errorMessage: err,
-      rawMessage: JSON.stringify(ctx.response.body),
-      stackTrace: err.stack
+    ctx.logger.error(ctx, {
+      errorMessage: err.message,
+      stackTrace: err.stackTrace
     })
     // logger?.error(`[<<] ${ctx.request.url} ${ctx.res.statusCode}`)
   }
