@@ -1,5 +1,5 @@
 import { SNS } from 'aws-sdk'
-import { Logger } from '../utils/logger'
+import { _Logger } from '../utils/logger'
 
 // MessageAttributes --> Have to set UseRawMessage (true) on cloudformation template
 // https://stackoverflow.com/questions/44238656/how-to-add-sqs-message-attributes-in-sns-subscription/49753291#49753291
@@ -26,7 +26,7 @@ export class SNSMessage<E> {
 }
 
 export interface SNSClientOption {
-  logger?: Logger
+  logger?: _Logger
 }
 
 export class SNSClient {

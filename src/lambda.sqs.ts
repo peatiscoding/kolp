@@ -1,6 +1,6 @@
 import type { SQSHandler, SQSRecord } from 'aws-lambda'
 import SQS from 'aws-sdk/clients/sqs'
-import { Logger } from './utils/logger'
+import { _Logger } from './utils/logger'
 
 interface MessageHandlerObject<M> {
   parseMessage?(body: any, sqsRecord: SQSRecord): M
@@ -29,7 +29,7 @@ export interface MessageHandlerOption {
   deleteMessagePolicy: 'always-delete-on-success' | 'auto' | 'never',
   beforeEachMessage: MessageHook[]
   sqsConfig?: SQS.Types.ClientConfiguration
-  logger?: Logger
+  logger?: _Logger
 }
 
 interface SQSHandleResult {
@@ -64,8 +64,8 @@ export const makeSQSHandler = <M>(messageHandler: MessageHandler<M>, opts: Parti
     try {
       if (opts.logger) {
         opts.logger.log('Received message body=', JSON.stringify(rec.body))
-        opts.logger.log('Received message attributes=', JSON.stringify(rec.attributes))
-        opts.logger.log('Received message messageAttributes=', JSON.stringify(rec.messageAttributes))
+        opts.logger.debug('Received message attributes=', JSON.stringify(rec.attributes))
+        opts.logger.debug('Received message messageAttributes=', JSON.stringify(rec.messageAttributes))
       }
       // Lifecycle hooks
       if (option.beforeEachMessage && option.beforeEachMessage.length > 0) {

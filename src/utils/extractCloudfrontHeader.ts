@@ -1,11 +1,11 @@
-import { Request } from 'koa'
-export const getClientDevice = (req: Request): string => {
+import { KolpServiceContext } from '../context'
+export const getClientDevice = (ctx: KolpServiceContext): string => {
   const {
     'cloudfront-is-desktop-viewer': isDesktop,
     'cloudfront-is-mobile-viewer': isMobile,
     'cloudfront-is-smarttv-viewer': isSmartTV,
     'cloudfront-is-tablet-viewer': isTablet,
-  } = req.headers
+  } = ctx.req.headers
 
   if (isDesktop) {
     return 'desktop'

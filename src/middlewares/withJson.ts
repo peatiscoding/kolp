@@ -5,10 +5,9 @@ export const withJson = (logger?: Logger): Middleware => async (ctx, next) => {
   // Assign logger if needed.
   ctx.logger = logger
   try {
-    // logger?.log(`[>>] ${ctx.request.url}`)
-    await next()
-    // Response egress
-    logger.info({
+    await next() 
+    ctx.logger.info({
+      statusCode: ctx.response.status,
       errorMessage: '-',
       rawMessage: JSON.stringify(ctx.response.body),
       stackTrace: '-'
@@ -23,7 +22,8 @@ export const withJson = (logger?: Logger): Middleware => async (ctx, next) => {
       error: err.message,
       data: err.data,
     };
-    logger.error({
+    ctx.logger.error({
+      statusCode: ctx.response.status,
       errorMessage: err,
       rawMessage: JSON.stringify(ctx.response.body),
       stackTrace: err.stack
