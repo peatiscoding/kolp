@@ -26,7 +26,8 @@ export class SNSMessage<E> {
 }
 
 export interface SNSClientOption {
-  logger?: LoggerInterface
+  // Will do logging inside http context
+  // logger?: LoggerInterface
 }
 
 export class SNSClient {
@@ -62,7 +63,8 @@ export class SNSClient {
       //   ResponseMetadata: { RequestId: '2e7f9e9a-9e99-49f1-90b0-82d900996c9e' },
       //   MessageId: 'cf9c5d63-0f1d-40c3-9a31-9e42da95c371'
       // }
-      this.options?.logger?.log(`Subject: ${message.Subject}; Message: ${result.MessageId} has been published.`)
+      // Will context from koa
+      // this.options?.logger?.log(`Subject: ${message.Subject}; Message: ${result.MessageId} has been published.`)
       return result.MessageId
     } catch (e) {
       // this.options?.logger?.error('Error from publishing message: ', e)
