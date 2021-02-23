@@ -39,9 +39,9 @@ export class BaseRoutedController {
    * @param path 
    * @param koaRouter 
    */
-  public register(path: string, koaRouter: KolpRouter) {
+  public register(path: string, koaRouter: KolpRouter, ...middlewares: Middleware<KolpServiceState, KolpServiceContext>[]) {
     const r = this.getRouter()
-    koaRouter.use(path, r.routes(), r.allowedMethods())
+    koaRouter.use(path, ...middlewares, r.routes(), r.allowedMethods())
   }
 
   public getRouter(): KolpRouter {
