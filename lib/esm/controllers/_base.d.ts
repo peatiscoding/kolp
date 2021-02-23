@@ -21,6 +21,6 @@ export declare class BaseRoutedController {
      * @param path
      * @param koaRouter
      */
-    register(path: string, koaRouter: KolpRouter): void;
+    register(path: string, koaRouter: KolpRouter, ...middlewares: Middleware<KolpServiceState, KolpServiceContext>[]): void;
     getRouter(): KolpRouter;
 }
