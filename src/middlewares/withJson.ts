@@ -17,6 +17,7 @@ export const withJson = (logger?: Logger): Middleware => async (ctx, next) => {
       error: err.message,
       data: err.data,
     };
+    logger?.error(`[<<] .. [E ${err.code && err.code}] ${err.message} ${err.data && JSON.stringify(err.data)}`)
     logger?.error(`[<<] ${ctx.request.url} ${ctx.res.statusCode}`)
   }
 }
