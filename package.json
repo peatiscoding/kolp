@@ -35,13 +35,15 @@
     "koa": "^2.9.0"
   },
   "devDependencies": {
+    "@aws-sdk/client-sns": "^3.490.0",
+    "@aws-sdk/client-sqs": "^3.490.0",
     "@serverless/typescript": "^2.12.0",
     "@types/aws-lambda": "^8.10.64",
     "@types/koa": "^2.11.6",
-    "@types/koa-bodyparser": "^4.3.0",
     "@types/koa__router": "^8.0.3",
+    "@types/koa-bodyparser": "^4.3.0",
     "@types/node": "^14.14.6",
-    "aws-sdk": "^2.824.0",
+    "aws-sdk": "^2.1538.0",
     "typescript": "^3.8"
   }
 }
