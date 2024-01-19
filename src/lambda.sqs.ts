@@ -1,5 +1,5 @@
 import type { SQSHandler, SQSRecord } from 'aws-lambda'
-import SQS from 'aws-sdk/clients/sqs'
+import { SQSClient, DeleteMessageCommand, SQSClientConfig } from '@aws-sdk/client-sqs'
 import { Logger } from './utils/logger'
 
 interface MessageHandlerObject<M> {
@@ -28,7 +28,7 @@ export interface MessageHandlerOption {
    */
   deleteMessagePolicy: 'always-delete-on-success' | 'auto' | 'never',
   beforeEachMessage: MessageHook[]
-  sqsConfig?: SQS.Types.ClientConfiguration
+  sqsConfig?: SQSClientConfig
   logger?: Logger
 }
 
@@ -37,9 +37,13 @@ interface SQSHandleResult {
   error?: Error
 }
 
-function getQueueUrl(sqs: SQS, eventSourceARN: string) {
+async function getQueueUrl(sqs: SQSClient, eventSourceARN: string) {
   const [, , , , accountId, queueName] = eventSourceARN.split(':')
-  return `${sqs.endpoint.href}${accountId}/${queueName}`
+  if (!sqs?.config?.endpoint) {
+    throw new Error('Fail to get endpoint')
+  }
+  const endpoint = await sqs.config.endpoint()
+  return `${endpoint.hostname}${accountId}/${queueName}`
 }
 
 export const makeSQSHandler = <M>(messageHandler: MessageHandler<M>, opts: Partial<MessageHandlerOption>): SQSHandler => async (event, context) => {
@@ -69,7 +73,7 @@ export const makeSQSHandler = <M>(messageHandler: MessageHandler<M>, opts: Parti
       }
       // Lifecycle hooks
       if (option.beforeEachMessage && option.beforeEachMessage.length > 0) {
-        for(const hook of option.beforeEachMessage) {
+        for (const hook of option.beforeEachMessage) {
           await hook(rec)
         }
       }
@@ -87,12 +91,12 @@ export const makeSQSHandler = <M>(messageHandler: MessageHandler<M>, opts: Parti
       return { record: rec, error }
     }
   }
-  
+
   let result: SQSHandleResult[] = []
   if (option.parallelism === 'full') {
     result = await Promise.all((event.Records.map(handleOneMessage)))
   } else if (option.parallelism === 'no') {
-    for(const rec of event.Records) {
+    for (const rec of event.Records) {
       result.push(await handleOneMessage(rec))
     }
   } else if (option.parallelism === 'useMessageGroupId') {
@@ -118,15 +122,17 @@ export const makeSQSHandler = <M>(messageHandler: MessageHandler<M>, opts: Parti
   const errorRecords: SQSRecord[] = result.filter((o) => o.error).map((o) => o.record)
 
   if (opts.deleteMessagePolicy === 'always-delete-on-success' || (opts.deleteMessagePolicy === 'auto' && errorRecords.length > 0)) {
-    const sqs = new SQS(option.sqsConfig)
+    const sqs = new SQSClient(option.sqsConfig || {})
     // Eventually we will delete all the success message and throw error if ncessary.
     for (const res of successResults) {
       const rec = res.record
+      const queueUrl = await getQueueUrl(sqs, rec.eventSourceARN)
+      const deleteCommand = new DeleteMessageCommand({
+        QueueUrl: queueUrl,
+        ReceiptHandle: rec.receiptHandle
+      })
       try {
-        await sqs.deleteMessage({
-          QueueUrl: getQueueUrl(sqs, rec.eventSourceARN),
-          ReceiptHandle: rec.receiptHandle
-        }).promise()
+        await sqs.send(deleteCommand)
       } catch (error) {
         opts.logger?.error('Failed to delete processed messages.')
       }

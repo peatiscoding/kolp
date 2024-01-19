@@ -1,13 +1,17 @@
-import { SNS } from 'aws-sdk';
+import { SNSClient as AwsSNSClient, MessageAttributeValue, PublishInput, SNSClientConfig } from '@aws-sdk/client-sns';
 import { Logger } from '../utils/logger';
 export declare class SNSMessage<E> {
     readonly Subject: string;
     readonly Message: E;
     readonly TopicArn: string;
-    readonly MessageAttributes?: SNS.MessageAttributeMap;
+    readonly MessageAttributes?: {
+        [key: string]: MessageAttributeValue;
+    };
     readonly MessageGroupId?: string;
-    constructor(Subject: string, Message: E, TopicArn: string, MessageAttributes?: SNS.MessageAttributeMap, MessageGroupId?: string);
-    serialized(): SNS.Types.PublishInput;
+    constructor(Subject: string, Message: E, TopicArn: string, MessageAttributes?: {
+        [key: string]: MessageAttributeValue;
+    }, MessageGroupId?: string);
+    serialized(): PublishInput;
 }
 export interface SNSClientOption {
     logger?: Logger;
@@ -15,7 +19,7 @@ export interface SNSClientOption {
 export declare class SNSClient {
     private readonly options?;
     private client;
-    constructor(configOrSNS: SNS | SNS.Types.ClientConfiguration, options?: Partial<SNSClientOption>);
+    constructor(configOrSNS: AwsSNSClient | SNSClientConfig, options?: Partial<SNSClientOption>);
     /**
      * publish a message to specific queue
      *

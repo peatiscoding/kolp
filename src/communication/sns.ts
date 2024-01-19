@@ -1,4 +1,4 @@
-import { SNS } from 'aws-sdk'
+import { SNSClient as AwsSNSClient, MessageAttributeValue, PublishCommand, PublishInput, SNSClientConfig } from '@aws-sdk/client-sns'
 import { Logger } from '../utils/logger'
 
 // MessageAttributes --> Have to set UseRawMessage (true) on cloudformation template
@@ -9,12 +9,14 @@ export class SNSMessage<E> {
     public readonly Subject: string,
     public readonly Message: E,
     public readonly TopicArn: string,
-    public readonly MessageAttributes?: SNS.MessageAttributeMap,
+    public readonly MessageAttributes?: {
+      [key: string]: MessageAttributeValue;
+    },
     public readonly MessageGroupId?: string
   ) {
   }
 
-  public serialized(): SNS.Types.PublishInput {
+  public serialized(): PublishInput {
     return {
       Subject: this.Subject,
       Message: JSON.stringify(this.Message),
@@ -31,13 +33,13 @@ export interface SNSClientOption {
 
 export class SNSClient {
 
-  private client: SNS
+  private client: AwsSNSClient
 
-  public constructor(configOrSNS: SNS | SNS.Types.ClientConfiguration, private readonly options?: Partial<SNSClientOption>) {
-    if (configOrSNS instanceof SNS) {
+  public constructor(configOrSNS: AwsSNSClient | SNSClientConfig, private readonly options?: Partial<SNSClientOption>) {
+    if (configOrSNS instanceof AwsSNSClient) {
       this.client = configOrSNS
     } else {
-      this.client = new SNS(configOrSNS)
+      this.client = new AwsSNSClient(configOrSNS)
     }
   }
 
@@ -49,14 +51,15 @@ export class SNSClient {
    */
   public async publish<E>(message: SNSMessage<E>): Promise<string> {
     try {
+      const publishCommand = new PublishCommand(message.serialized())
       const result = await this.client
-        .publish(message.serialized())
-        .promise()
+        .send(publishCommand)
+        
 
-      if (result.$response.error) {
-        throw result.$response.error
+      if (!result.MessageId) {
+        throw result
       }
-      
+
       // Example output 
       // {
       //   ResponseMetadata: { RequestId: '2e7f9e9a-9e99-49f1-90b0-82d900996c9e' },

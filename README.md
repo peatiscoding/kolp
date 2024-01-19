@@ -4,6 +4,10 @@
 
 Accronym for Koa on Lambda (Pack). A tiny library toolbox for Lambda (using Koa, Koa Router) then describe your endpoints with controllers.
 
+**Version 2:**
+
+- Updated npm package dependencies to use aws-sdk v3 instead.
+
 ## Install
 
 ```
@@ -101,5 +105,5 @@ curl -XGET http://localhost:9000/hello/hi
 ```
 [ ] Example repo
 [ ] Inter Service Communication
-[ ] SNS/SQS Handler
+[X] SNS/SQS Handler
 ```

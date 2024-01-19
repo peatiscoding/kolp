@@ -83,5 +83,5 @@ export declare enum ServerErrorCode {
      */
     gatewayTimeout = 504
 }
-export declare type ErrorCode = ClientErrorCode | ServerErrorCode;
-export declare type ResponseCode = SuccessCode | RedirectonCode | ErrorCode;
+export type ErrorCode = ClientErrorCode | ServerErrorCode;
+export type ResponseCode = SuccessCode | RedirectonCode | ErrorCode;

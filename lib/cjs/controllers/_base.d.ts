@@ -2,7 +2,7 @@
 import { Middleware } from 'koa';
 import type { KolpServiceContext, KolpServiceState } from '../context';
 import Router from '@koa/router';
-export declare type HttpMethod = 'post' | 'get' | 'delete' | 'put' | 'patch';
+export type HttpMethod = 'post' | 'get' | 'delete' | 'put' | 'patch';
 export interface RouteMapMeta {
     method: HttpMethod | HttpMethod[];
     path?: string;
@@ -11,7 +11,7 @@ export interface RouteMapMeta {
 export interface RouteMap {
     [key: string]: RouteMapMeta;
 }
-export declare type KolpRouter = Router<KolpServiceState, KolpServiceContext>;
+export type KolpRouter = Router<KolpServiceState, KolpServiceContext>;
 export declare class BaseRoutedController {
     getRouteMaps(): RouteMap;
     handleSuccess(context: KolpServiceContext, data: any): Promise<void>;

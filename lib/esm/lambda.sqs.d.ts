@@ -1,5 +1,5 @@
 import type { SQSHandler, SQSRecord } from 'aws-lambda';
-import SQS from 'aws-sdk/clients/sqs';
+import { SQSClientConfig } from '@aws-sdk/client-sqs';
 import { Logger } from './utils/logger';
 interface MessageHandlerObject<M> {
     parseMessage?(body: any, sqsRecord: SQSRecord): M;
@@ -8,8 +8,8 @@ interface MessageHandlerObject<M> {
 interface MessageHandlerFunction<M> {
     (message: M, sqsRecord: SQSRecord): Promise<void>;
 }
-export declare type MessageHandler<M> = MessageHandlerObject<M> | MessageHandlerFunction<M>;
-export declare type MessageHook = (o: SQSRecord) => void | Promise<void>;
+export type MessageHandler<M> = MessageHandlerObject<M> | MessageHandlerFunction<M>;
+export type MessageHook = (o: SQSRecord) => void | Promise<void>;
 export interface MessageHandlerOption {
     bodyType: 'json' | 'string';
     parallelism: 'no' | 'full' | 'useMessageGroupId';
@@ -22,7 +22,7 @@ export interface MessageHandlerOption {
      */
     deleteMessagePolicy: 'always-delete-on-success' | 'auto' | 'never';
     beforeEachMessage: MessageHook[];
-    sqsConfig?: SQS.Types.ClientConfiguration;
+    sqsConfig?: SQSClientConfig;
     logger?: Logger;
 }
 export declare const makeSQSHandler: <M>(messageHandler: MessageHandler<M>, opts: Partial<MessageHandlerOption>) => SQSHandler;

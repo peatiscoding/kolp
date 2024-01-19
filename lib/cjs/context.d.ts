@@ -7,4 +7,4 @@ export interface KolpServiceContext extends Context {
 }
 export interface KolpServiceState {
 }
-export declare type Middleware = KoaMiddleware<KolpServiceState, KolpServiceContext>;
+export type Middleware = KoaMiddleware<KolpServiceState, KolpServiceContext>;
